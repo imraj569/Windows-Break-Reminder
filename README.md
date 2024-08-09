@@ -1,53 +1,51 @@
-# 🖥️ Windows Break Reminder ⏰
+---
 
-![Windows Break Reminder](https://img.shields.io/badge/Windows%20Break%20Reminder-v1.0-blue)
+# ⏰ Break Reminder Script with Screen Lock and Health Tips
 
-A simple yet effective Python script designed to remind you to take regular breaks while working on your computer. It locks your screen and provides health tips during breaks to keep you refreshed and healthy. This tool is especially useful for anyone spending long hours on their PC, helping to prevent eye strain, fatigue, and burnout.
+This Python script is designed to help you maintain a healthy work routine by reminding you to take regular breaks. The script locks your PC screen for a 5-minute break and tracks whether the break was successful (i.e., the PC was locked for the entire 5 minutes). After a successful break, the script will remind you again after 25 minutes. If the break is skipped, it will remind you every 10 minutes until a successful break is taken.
 
-## ✨ Features
+## 🚀 Features
 
-- **🔔 Break Reminders**: Receive notifications reminding you to take a break after a specified interval.
-- **🔒 Automatic Screen Lock**: Automatically locks your screen during breaks to ensure you take them seriously.
-- **💡 Health Tips**: Displays random health tips or exercises during break time to help you stay active and healthy.
-- **⚙️ Customizable Intervals**: Easily modify the break interval and break duration to suit your needs.
-
-## 🚀 Future Enhancements
-
-- **🤖 AI Integration**: Plans to incorporate AI features that intelligently suggest break times based on your activity and provide personalized health tips.
+- **Regular Break Reminders**: Receive notifications every 25 minutes to take a 5-minute break.
+- **PC Screen Lock**: Automatically locks your screen to ensure you take the break.
+- **Health Tips**: Displays a random health tip during each break to promote well-being.
+- **Successful Break Detection**: The script checks if your PC remains locked for the full 5-minute break. If the break is successful, the next reminder will be after 25 minutes.
+- **Flexible Reminder Cycle**: If a break is skipped, the script will remind you every 10 minutes until a successful break is detected.
 
 ## 📦 Installation
 
 1. **Clone the repository**:
+
    ```bash
-   git clone https://github.com/imraj569/Windows-Break-Reminder.git
+   git clone https://github.com/imraj569/break-reminder-script.git
    ```
-2. **Navigate to the directory**:
-   ```bash
-   cd Windows-Break-Reminder
-   ```
-3. **Install required libraries**:
+
+2. **Install the required packages**:
+
    ```bash
    pip install win10toast keyboard
    ```
 
 ## 🛠️ Usage
 
-1. Open the script file `break_reminder.py` and customize the break interval and break time if needed.
-2. Run the script using Python:
-   ```bash
-   python break_reminder.py
-   ```
-3. The script will start running in the background, sending notifications and locking the screen at specified intervals.
+Run the script from the command line or your favorite Python IDE:
 
-## 🤝 Contributing
+```bash
+python break_reminder.py
+```
 
-Contributions are welcome! Please fork this repository, make your changes, and submit a pull request.
+### Parameters:
+- **Break Interval**: Time in minutes between successful breaks (default: 25 minutes).
+- **Break Time**: Duration of each break in minutes (default: 5 minutes).
 
-## 📜 License
+The script will start by waiting for the first 25 minutes before reminding you to take a break. If the break is successful, it will wait another 25 minutes before the next reminder. If the break is skipped, it will remind you every 10 minutes until you take a successful break.
+
+## 🤖 Future Plans
+
+In the future, this script will be integrated with AI to provide smarter notifications, personalized health tips, and enhanced user interaction.
+
+## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📧 Contact
-
-If you have any questions, feel free to reach out via my [GitHub profile](https://github.com/imraj569/).
-
+---

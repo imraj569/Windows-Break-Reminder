@@ -2,6 +2,7 @@ import time
 from win10toast import ToastNotifier
 import random
 from keyboard import press_and_release
+import ctypes
 
 # Create an instance of ToastNotifier
 toaster = ToastNotifier()
@@ -15,34 +16,45 @@ tips = [
     "🔄 Rotate your shoulders in a circular motion to release tension."
 ]
 
+# Function to lock the screen
 def lock_screen():
     press_and_release("win+l")
 
-def remind_and_break(break_interval,brak_time):
-    # Wait for the first 25 minutes before the first reminder
-   
-    time.sleep(break_interval * 60)
-    
-    while True:
-        try:
-            # Reminder notification
-            toaster.show_toast("Reminder 🕒", "Time to take a 5-minute break! 🌟", duration=10)
-            
-            # Lock the PC screen
-            lock_screen()
-            
-            # Wait for 25 minutes
-            time.sleep(break_interval * 60)
-            
-            # During the break, show a health tip and wait for 5 minutes
-            tip = random.choice(tips)
-            toaster.show_toast("Break Time ⏳", f"Take a break! Tip: {tip}", duration=10)
-            time.sleep(brak_time * 60)  # 5 minutes break
+# Function to check if the screen is locked
+def is_screen_locked():
+    user32 = ctypes.windll.user32
+    # Get the idle time in milliseconds
+    idle_time = user32.GetTickCount() - user32.GetLastInputInfo()
+    # Consider the screen locked if the idle time exceeds 5 seconds (adjust as needed)
+    return idle_time > 5000
 
-        except TypeError as e:
-            print(f"Error: {e}")
-            # Handle or log the exception as needed
+# Function to check if the break is successful
+def is_break_successful(break_time):
+    start_time = time.time()
+    while time.time() - start_time < break_time * 60:
+        if not is_screen_locked():
+            return False
+        time.sleep(2)  # Check every 2 seconds
+    return True
+
+# Main function to handle reminders and breaks
+def remind_and_break(break_interval, break_time):
+    while True:
+        # Reminder notification
+        toaster.show_toast("Reminder 🕒", "Time to take a 5-minute break! 🌟", duration=10)
+        
+        # Lock the PC screen
+        lock_screen()
+        
+        # Check if the break is successful
+        if is_break_successful(break_time):
+            print("Break was successful.")
+            time.sleep(break_interval * 60)  # Wait for 25 minutes before the next reminder
+        else:
+            print("Break was not successful. Reminding again in 10 minutes.")
+            time.sleep(10 * 60)  # Remind again in 10 minutes if the break was not successful
+            continue  # Skip the next interval wait and remind again immediately
 
 if __name__ == "__main__":
-    #25 is the break_interval & 5 is break_time
-    remind_and_break(int(25,5))
+    # 25 is the break_interval & 5 is break_time
+    remind_and_break(25, 5)
