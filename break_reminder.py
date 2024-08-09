@@ -23,10 +23,8 @@ def lock_screen():
 # Function to check if the screen is locked
 def is_screen_locked():
     user32 = ctypes.windll.user32
-    # Get the idle time in milliseconds
     idle_time = user32.GetTickCount() - user32.GetLastInputInfo()
-    # Consider the screen locked if the idle time exceeds 5 seconds (adjust as needed)
-    return idle_time > 5000
+    return idle_time > 5000  # Screen locked if idle time > 5 seconds
 
 # Function to check if the break is successful
 def is_break_successful(break_time):
@@ -39,9 +37,14 @@ def is_break_successful(break_time):
 
 # Main function to handle reminders and breaks
 def remind_and_break(break_interval, break_time):
+    time.sleep(break_interval * 60)  # Skip first break, wait for 25 minutes
+    
     while True:
+        # Select a random tip
+        tip = random.choice(tips)
+        
         # Reminder notification
-        toaster.show_toast("Reminder 🕒", "Time to take a 5-minute break! 🌟", duration=10)
+        toaster.show_toast("Reminder 🕒", f"Time to take a 5-minute break! 🌟 {tip}", duration=10)
         
         # Lock the PC screen
         lock_screen()
