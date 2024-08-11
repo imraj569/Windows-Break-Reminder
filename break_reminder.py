@@ -69,7 +69,7 @@ class TimerApp:
             self.timer_id = self.root.after(1000, self.run_timer)  # Schedule next update in 1 second
         else:
             self.timer_running = False
-            self.time_label.config(text="Time to take a break!")
+            self.time_label.config(text="Time to take a break!🍵")
             self.take_break_button.config(state=tk.NORMAL)
             self.skip_break_button.config(state=tk.NORMAL)
 
