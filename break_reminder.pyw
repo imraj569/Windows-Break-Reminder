@@ -1,24 +1,30 @@
 import tkinter as tk
 import os
 import ctypes
+import pygame
+from PIL import Image, ImageTk, ImageSequence
+
+pygame.mixer.init()  # Initialize pygame for sound playback
 
 class TimerApp:
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
+
         self.root = tk.Tk()
         self.root.title("Break Reminder")
-        
-        # Convert cm to pixels (approximately 37.7953 pixels per cm)
-        width_cm = 7
-        height_cm = 2
+
+        # Convert cm to pixels
+        width_cm = config['reminder_width']
+        height_cm = config['reminder_height']
         width_px = int(37.7953 * width_cm)
         height_px = int(37.7953 * height_cm)
-        
+
         # Set window size
         self.root.geometry(f"{width_px}x{height_px}")
         self.root.attributes('-topmost', True)  # Keep window on top
 
         # Timer Label with smaller font size
-        self.time_label = tk.Label(self.root, font=('Helvetica', 12), bg='white', fg='black')
+        self.time_label = tk.Label(self.root, font=('Helvetica', config['timer_size']), bg='white', fg='black')
         self.time_label.pack(pady=1)
 
         # Frame for buttons
@@ -39,13 +45,45 @@ class TimerApp:
         self.reset_button.pack(side=tk.LEFT, padx=1)
 
         # Timer settings
-        self.work_time = 25 * 60  # 25 minutes
-        self.break_time = 10 * 60  # 10 minutes
+        self.work_time = config['work_time']
+        self.break_time = config['break_time']
         self.remaining_time = self.work_time
         self.timer_running = False
         self.timer_id = None  # To keep track of the current timer
 
+        # Load GIF images and handle frames correctly
+        self.work_gif_frames = self.load_gif_frames(config['work_gif_path'])
+        self.break_gif_frames = self.load_gif_frames(config['break_gif_path'])
+        self.hello_gif_frames = self.load_gif_frames(config['hello_gif_path'])
+
+        self.current_gif_frames = self.hello_gif_frames  # Start with the hello GIF
+        self.gif_index = 0
+        self.gif_label = tk.Label(self.root, image=self.hello_gif_frames[0])  # Initial image
+        self.gif_label.pack(side=tk.TOP)  # Place at the top
+        self.animate_gif()
+
         self.update_timer_display()
+
+        # Center the window
+        self.root.update_idletasks()
+        width = self.root.winfo_width()
+        height = self.root.winfo_height()
+        screenwidth = self.root.winfo_screenwidth()
+        screenheight = self.root.winfo_screenheight()
+        x = (screenwidth - width) // 2
+        y = (screenheight - height) // 2
+        self.root.geometry(f"{width}x{height}+{x}+{y}")
+
+    def load_gif_frames(self, gif_path):
+        frames = []
+        try:
+            gif = Image.open(gif_path)
+            for frame in ImageSequence.Iterator(gif):
+                frame = frame.resize((self.config['gif_width'], self.config['gif_height']))  # Resize the frame to configured size
+                frames.append(ImageTk.PhotoImage(frame))
+        except Exception as e:
+            print(f"Error loading GIF frames: {e}")
+        return frames
 
     def update_timer_display(self):
         minutes, seconds = divmod(self.remaining_time, 60)
@@ -58,6 +96,7 @@ class TimerApp:
         self.take_break_button.config(state=tk.NORMAL)
         self.skip_break_button.config(state=tk.NORMAL)
         self.run_timer()
+        self.switch_to_work_gif()  # Start the work GIF when the timer starts
 
     def run_timer(self):
         if not self.timer_running:
@@ -69,11 +108,23 @@ class TimerApp:
             self.timer_id = self.root.after(1000, self.run_timer)  # Schedule next update in 1 second
         else:
             self.timer_running = False
-            self.time_label.config(text="Time to take a break!🍵")
+            self.play_sound()  # Play sound when timer reaches 0
+            self.time_label.config(text="Time to take a break!")
             self.take_break_button.config(state=tk.NORMAL)
             self.skip_break_button.config(state=tk.NORMAL)
+            self.switch_to_break_gif()  # Switch to the break GIF
+
+    def play_sound(self):
+        try:
+            # Load the sound using pygame
+            pygame.mixer.music.load(self.config['sound_path'])
+            pygame.mixer.music.play(-1)  # Play in a loop
+        except pygame.error as e:
+            print(f"Error playing sound: {e}")
 
     def take_break(self):
+        self.stop_sound()  # Stop any playing sound
+        self.stop_gif_animation()  # Stop the current GIF
         lock_pc()
         self.timer_running = False  # Stop the timer
         self.remaining_time = self.work_time  # Reset to work time after break
@@ -83,16 +134,24 @@ class TimerApp:
         self.skip_break_button.config(state=tk.DISABLED)
         if self.timer_id:
             self.root.after_cancel(self.timer_id)  # Cancel any running timer
+        self.switch_to_hello_gif()  # Switch to the hello GIF during break
+
+    def stop_sound(self):
+        pygame.mixer.music.stop()
 
     def skip_break(self):
+        self.stop_sound()  # Stop any playing sound
+        self.stop_gif_animation()  # Stop the current GIF
         self.timer_running = False  # Stop the current timer
         if self.timer_id:
             self.root.after_cancel(self.timer_id)  # Cancel the existing timer
-        self.remaining_time = self.break_time  # Set to skip break time
+        self.remaining_time = self.break_time  # Set to break time
         self.update_timer_display()
-        self.start_timer()  # Start the skip break timer
+        self.start_timer()  # Start the timer for break
+        self.switch_to_work_gif()  # Switch to the work GIF
 
     def reset_timer(self):
+        self.stop_sound()  # Stop any playing sound
         self.timer_running = False
         if self.timer_id:
             self.root.after_cancel(self.timer_id)  # Cancel any running timer
@@ -101,6 +160,33 @@ class TimerApp:
         self.start_button.config(state=tk.NORMAL)
         self.take_break_button.config(state=tk.DISABLED)
         self.skip_break_button.config(state=tk.DISABLED)
+        self.switch_to_hello_gif()  # Ensure the hello GIF is displayed during wait time
+
+    def animate_gif(self):
+        self.gif_label.config(image=self.current_gif_frames[self.gif_index])
+        self.gif_index = (self.gif_index + 1) % len(self.current_gif_frames)
+        self.gif_label.after(150, self.animate_gif)  # Adjusted delay for slower animation
+
+    def stop_gif_animation(self):
+        self.gif_label.after_cancel(self.gif_label)  # Stop the current GIF animation
+
+    def switch_to_work_gif(self):
+        self.stop_gif_animation()  # Stop the current GIF animation
+        self.current_gif_frames = self.work_gif_frames
+        self.gif_index = 0
+        self.animate_gif()  # Start the work GIF animation
+
+    def switch_to_break_gif(self):
+        self.stop_gif_animation()  # Stop the current GIF animation
+        self.current_gif_frames = self.break_gif_frames
+        self.gif_index = 0
+        self.animate_gif()  # Start the break GIF animation
+
+    def switch_to_hello_gif(self):
+        self.stop_gif_animation()  # Stop the current GIF animation
+        self.current_gif_frames = self.hello_gif_frames
+        self.gif_index = 0
+        self.animate_gif()  # Start the hello GIF animation
 
 def lock_pc():
     """
@@ -109,8 +195,22 @@ def lock_pc():
     ctypes.windll.user32.LockWorkStation()
 
 def main():
+    config = {
+        'sound_path': r"D:\Github Projects\Windows-Break-Reminder\DataBase\sound.mp3",
+        'work_gif_path': r"D:\Github Projects\Windows-Break-Reminder\DataBase\work.gif",
+        'break_gif_path': r"D:\Github Projects\Windows-Break-Reminder\DataBase\break.gif",
+        'hello_gif_path': r"D:\Github Projects\Windows-Break-Reminder\DataBase\hello.gif",
+        'work_time': 25 * 60,  # 25 minutes
+        'break_time': 10 * 60,  # 10 minutes
+        'reminder_width': 7,  # reminder width in cm
+        'reminder_height': 7.5,  # reminder height in cm
+        'gif_width': 200,  # in pixels
+        'gif_height': 200,  # in pixels
+        'timer_size': 20,  # size of the timer
+    }
+
     os.system('cls')  # Clear the screen
-    app = TimerApp()
+    app = TimerApp(config)
     app.root.mainloop()
 
 if __name__ == "__main__":
