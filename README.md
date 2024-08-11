@@ -32,11 +32,13 @@ Welcome to the **Break Reminder** application! This simple tool is designed to h
    ```bash
    cd Windows-Break-Reminder
    ```
+
+3. **Install Requirements file**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Run the Script**:
+4. **Run the Script**:
 
    Double-click `break_reminder.pyw` to run the application (it will run in the background without a console window).
 
