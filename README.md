@@ -1,54 +1,83 @@
----
+```markdown
+# Break Reminder
 
-# ⏰ Break Reminder Script with Screen Lock, Auto-Close Popups, and Health Tips
+![Python](https://img.shields.io/badge/python-3.11-blue.svg)
 
-This Python script is designed to help you maintain a healthy work routine by reminding you to take regular breaks. The script locks your PC screen for a 5-minute break and tracks whether the break was successful (i.e., the PC was locked for the entire 5 minutes). If the break is skipped, the script will remind you every 10 minutes until a successful break is taken.
+## Overview
 
-## 🚀 Features
+`break_reminder.pyw` is a simple Python-based script designed to help you take regular breaks while working. It reminds you to take a 5-minute break every 25 minutes, with an option to skip the break and be reminded again after 10 minutes. The script locks the PC when you decide to take a break and waits for you to manually start the timer again.
 
-- **Regular Break Reminders**: Receive notifications every 25 minutes to take a 5-minute break.
-- **PC Screen Lock**: Automatically locks your screen to ensure you take the break.
-- **Auto-Close Popups**: Reminder popups automatically close after 2 minutes if no action is taken.
-- **Health Tips**: Displays a random health tip during each break to promote well-being.
-- **Successful Break Detection**: The script checks if your PC remains locked for the full 5-minute break. If the break is successful, the next reminder will be after 25 minutes.
-- **Flexible Reminder Cycle**: If a break is skipped, the script will remind you every 10 minutes until a successful break is detected.
+## Features
 
-## 📦 Installation
+- **Pomodoro-style Timer**: The script operates on a 25-minute work cycle followed by a 5-minute break.
+- **User Interaction**: When the break time is up, a popup window appears with three options:
+  - **Start**: Starts the 25-minute countdown.
+  - **Take Break**: Locks the PC and resets the timer to 25 minutes.
+  - **Skip Break**: Starts a 10-minute countdown before reminding you to take a break again.
+- **Reset Functionality**: Allows you to reset the timer at any time.
 
-1. **Clone the repository**:
+## Requirements
 
-   ```bash
-   git clone https://github.com/imraj569/break-reminder-script.git
-   ```
+To run this script, you need Python 3.11 installed. You also need to install the required libraries listed in `requirements.txt`.
 
-2. **Install the required packages**:
-
-   ```bash
-   pip install pyqt5
-   ```
-
-## 🛠️ Usage
-
-Run the script from the command line or your favorite Python IDE:
+### Install the required packages:
 
 ```bash
-python break_reminder.py
+pip install -r requirements.txt
 ```
 
-### Parameters:
-- **Work Duration**: Time in minutes between successful breaks (default: 25 minutes).
-- **Break Time**: Duration of each break in minutes (default: 5 minutes).
-- **Reminder Interval**: Time in minutes before a new reminder is sent if the break is skipped (default: 10 minutes).
-- **Popup Timeout**: Time in seconds before the reminder popup automatically closes (default: 2 minutes).
+## Usage
 
-The script will start by waiting for 25 minutes before reminding you to take a break. If the break is successful, it will wait another 25 minutes before the next reminder. If the break is skipped, it will remind you every 10 minutes until you take a successful break.
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/imraj569/break_reminder.git
+    cd break_reminder
+    ```
 
-## 🤖 Future Plans
+2. Run the script using:
+    ```bash
+    python break_reminder.pyw
+    ```
 
-In the future, this script will be integrated with AI to provide smarter notifications, personalized health tips, and enhanced user interaction.
+## How It Works
 
-## 📝 License
+1. **Start the Timer**: Click the "Start" button to begin the 25-minute countdown.
+2. **Take a Break**: When prompted, click "Take Break" to lock the PC and reset the timer.
+3. **Skip Break**: If you're not ready to take a break, click "Skip Break" to start a 10-minute countdown.
+4. **Reset Timer**: Use the "Reset" button to reset the timer to its initial state.
+
+## Contributions
+
+Contributions are welcome! Please feel free to submit a pull request or open an issue for any improvements or suggestions.
+
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
+## Contact
+
+Created by [Rajkishor Patra](https://github.com/imraj569/). Feel free to reach out for any questions or feedback!
+```
+
+### requirements.txt
+
+```plaintext
+tkinter
+```
+
+### How to Add Files to Your GitHub Repository
+
+1. **Create the `requirements.txt` file**:
+   - Save the content provided above into a file named `requirements.txt`.
+
+2. **Create the `README.md` file**:
+   - Save the content provided above into a file named `README.md`.
+
+3. **Push the changes to GitHub**:
+   ```bash
+   git add README.md requirements.txt break_reminder.pyw
+   git commit -m "Added README and requirements.txt for break_reminder.pyw"
+   git push origin main
+   ```
+
+This should set up your GitHub repository nicely!
