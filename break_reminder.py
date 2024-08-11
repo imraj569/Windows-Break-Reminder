@@ -1,84 +1,117 @@
-import sys
-import time
+import tkinter as tk
 import os
 import ctypes
-import random
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QApplication, QMessageBox
 
-# Set actual work and break durations (in seconds)
-WORK_DURATION = 25 * 60  # 25 minutes
-BREAK_DURATION = 5 * 60 # 5 minutes
-REMINDER_INTERVAL = 10 * 60  # 10 minutes after skip for actual use
-POPUP_TIMEOUT = 2 * 60  # 2 minutes in milliseconds
+class TimerApp:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("Break Reminder")
+        
+        # Convert cm to pixels (approximately 37.7953 pixels per cm)
+        width_cm = 7
+        height_cm = 2
+        width_px = int(37.7953 * width_cm)
+        height_px = int(37.7953 * height_cm)
+        
+        # Set window size
+        self.root.geometry(f"{width_px}x{height_px}")
+        self.root.attributes('-topmost', True)  # Keep window on top
 
-# List of health tips and suggestions
-health_tips = [
-    "💧 Stay hydrated! Drink a glass of water during your break.",
-    "👀 Rest your eyes! Look away from the screen for 20 seconds.",
-    "🧘‍♂️ Stretch your body! Do some light stretching exercises.",
-    "🚶‍♂️ Take a short walk around the office.",
-    "☕ Grab a cup of tea or coffee and relax.",
-    "💤 Close your eyes and take deep breaths to relax.",
-    "🤸‍♂️ Do a quick exercise like jumping jacks or push-ups.",
-    "🎧 Listen to your favorite song and refresh your mind."
-]
+        # Timer Label with smaller font size
+        self.time_label = tk.Label(self.root, font=('Helvetica', 12), bg='white', fg='black')
+        self.time_label.pack(pady=1)
 
-def is_pc_locked():
-    """Check if the PC is likely locked by checking if the screen saver is active."""
-    user32 = ctypes.windll.user32
-    screen_saver_active = ctypes.c_bool()
-    user32.SystemParametersInfoW(114, 0, ctypes.byref(screen_saver_active), 0)
-    return screen_saver_active.value
+        # Frame for buttons
+        self.button_frame = tk.Frame(self.root)
+        self.button_frame.pack(pady=1)
 
-def show_reminder():
-    if is_pc_locked():
-        print("PC is locked, skipping reminder.")
-        start_timer(WORK_DURATION)
-        return
+        # Buttons with smaller font size
+        self.start_button = tk.Button(self.button_frame, text="Start", command=self.start_timer, font=('Helvetica', 8))
+        self.start_button.pack(side=tk.LEFT, padx=1)
 
-    app = QApplication(sys.argv)
-    msg = QMessageBox()
-    msg.setIcon(QMessageBox.Information)
-    msg.setWindowTitle("Time to Take a Break!")
+        self.take_break_button = tk.Button(self.button_frame, text="Take Break", command=self.take_break, state=tk.DISABLED, font=('Helvetica', 8))
+        self.take_break_button.pack(side=tk.LEFT, padx=1)
 
-    # Choose a random health tip
-    tip = random.choice(health_tips)
-    msg.setText(f"You've been working for a while. Would you like to take a break?\n\n{tip}")
+        self.skip_break_button = tk.Button(self.button_frame, text="Skip Break", command=self.skip_break, state=tk.DISABLED, font=('Helvetica', 8))
+        self.skip_break_button.pack(side=tk.LEFT, padx=1)
 
-    msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-    msg.button(QMessageBox.Yes).setText("Take a break now 🛌")
-    msg.button(QMessageBox.No).setText("Skip for now ⏳")
+        self.reset_button = tk.Button(self.button_frame, text="Reset", command=self.reset_timer, font=('Helvetica', 8))
+        self.reset_button.pack(side=tk.LEFT, padx=1)
 
-    # Set a timer to automatically close the popup after 2 minutes
-    auto_close_timer = QTimer(msg)
-    auto_close_timer.timeout.connect(lambda: msg.done(QMessageBox.No))
-    auto_close_timer.start(POPUP_TIMEOUT)
+        # Timer settings
+        self.work_time = 25 * 60  # 25 minutes
+        self.break_time = 10 * 60  # 10 minutes
+        self.remaining_time = self.work_time
+        self.timer_running = False
+        self.timer_id = None  # To keep track of the current timer
 
-    user_choice = msg.exec_()
+        self.update_timer_display()
 
-    if user_choice == QMessageBox.Yes:
-        take_break()
-    else:
-        skip_break()
+    def update_timer_display(self):
+        minutes, seconds = divmod(self.remaining_time, 60)
+        timer_text = '{:02d}:{:02d}'.format(int(minutes), int(seconds))
+        self.time_label.config(text=timer_text)
 
-def take_break():
-    print("Taking a break for 5 minutes...")
-    lock_pc()
-    time.sleep(BREAK_DURATION)  # Wait for the break duration
-    start_timer(WORK_DURATION)  # Start work timer again
+    def start_timer(self):
+        self.timer_running = True
+        self.start_button.config(state=tk.DISABLED)
+        self.take_break_button.config(state=tk.NORMAL)
+        self.skip_break_button.config(state=tk.NORMAL)
+        self.run_timer()
+
+    def run_timer(self):
+        if not self.timer_running:
+            return
+
+        if self.remaining_time > 0:
+            self.remaining_time -= 1
+            self.update_timer_display()
+            self.timer_id = self.root.after(1000, self.run_timer)  # Schedule next update in 1 second
+        else:
+            self.timer_running = False
+            self.time_label.config(text="Time to take a break!")
+            self.take_break_button.config(state=tk.NORMAL)
+            self.skip_break_button.config(state=tk.NORMAL)
+
+    def take_break(self):
+        lock_pc()
+        self.timer_running = False  # Stop the timer
+        self.remaining_time = self.work_time  # Reset to work time after break
+        self.update_timer_display()
+        self.start_button.config(state=tk.NORMAL)  # Re-enable the Start button
+        self.take_break_button.config(state=tk.DISABLED)
+        self.skip_break_button.config(state=tk.DISABLED)
+        if self.timer_id:
+            self.root.after_cancel(self.timer_id)  # Cancel any running timer
+
+    def skip_break(self):
+        self.timer_running = False  # Stop the current timer
+        if self.timer_id:
+            self.root.after_cancel(self.timer_id)  # Cancel the existing timer
+        self.remaining_time = self.break_time  # Set to skip break time
+        self.update_timer_display()
+        self.start_timer()  # Start the skip break timer
+
+    def reset_timer(self):
+        self.timer_running = False
+        if self.timer_id:
+            self.root.after_cancel(self.timer_id)  # Cancel any running timer
+        self.remaining_time = self.work_time
+        self.update_timer_display()
+        self.start_button.config(state=tk.NORMAL)
+        self.take_break_button.config(state=tk.DISABLED)
+        self.skip_break_button.config(state=tk.DISABLED)
 
 def lock_pc():
-    os.system("rundll32.exe user32.dll,LockWorkStation")
+    """
+    Locks the PC using Windows API.
+    """
+    ctypes.windll.user32.LockWorkStation()
 
-def skip_break():
-    print("Skipping break. You will be reminded again in 10 minutes.")
-    start_timer(REMINDER_INTERVAL)
-
-def start_timer(duration):
-    time.sleep(duration)
-    show_reminder()
+def main():
+    os.system('cls')  # Clear the screen
+    app = TimerApp()
+    app.root.mainloop()
 
 if __name__ == "__main__":
-    print("Starting work timer for 25 minutes...")
-    start_timer(WORK_DURATION)
+    main()
