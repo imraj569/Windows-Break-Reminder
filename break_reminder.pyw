@@ -3,6 +3,8 @@ import os
 import ctypes
 import pygame
 from PIL import Image, ImageTk, ImageSequence
+from plyer import notification
+import random
 
 pygame.mixer.init()  # Initialize pygame for sound playback
 
@@ -98,6 +100,24 @@ class TimerApp:
         self.run_timer()
         self.switch_to_work_gif()  # Start the work GIF when the timer starts
 
+    #notification system for remind and tips
+    def notify_break(self):
+        messages = [
+            "Take a short break! 🚶‍♀️🚶‍♂️ Fresh air and movement boost energy.",
+            "Stretch your body! 🤸‍♀️🤸‍♂️ Improves flexibility and reduces stress.",
+            "Drink some water! 💧💧 Hydration is key for focus and well-being.",
+            "Practice deep breathing! 🧘‍♂️🧘‍♀️ Calms your mind and reduces anxiety.",
+            "Get some sunlight! ☀️☀️ Vitamin D is essential for good health.",
+            "Eat a healthy snack! 🍎🍏 Nourish your body for optimal performance.",
+        ]
+        message = random.choice(messages)
+        notification.notify(
+            title="Time for a Break! Boss",
+            message=message,
+            app_icon=r"D:\Github Projects\Windows-Break-Reminder\DataBase\icon.ico",  # Replace with your app icon if you have one
+            timeout= 2* 60  # Notification will disappear after 10 seconds
+        )
+
     def run_timer(self):
         if not self.timer_running:
             return
@@ -110,6 +130,7 @@ class TimerApp:
             self.timer_running = False
             self.play_sound()  # Play sound when timer reaches 0
             self.time_label.config(text="Time to take a break!")
+            self.notify_break()
             self.take_break_button.config(state=tk.NORMAL)
             self.skip_break_button.config(state=tk.NORMAL)
             self.switch_to_break_gif()  # Switch to the break GIF
@@ -200,13 +221,13 @@ def main():
         'work_gif_path': r"D:\Github Projects\Windows-Break-Reminder\DataBase\work.gif",
         'break_gif_path': r"D:\Github Projects\Windows-Break-Reminder\DataBase\break.gif",
         'hello_gif_path': r"D:\Github Projects\Windows-Break-Reminder\DataBase\hello.gif",
-        'work_time': 25 * 60,  # 25 minutes
+        'work_time': 25 *60,  # 25 minutes
         'break_time': 10 * 60,  # 10 minutes
-        'reminder_width': 7,  # reminder width in cm
-        'reminder_height': 7.5,  # reminder height in cm
-        'gif_width': 200,  # in pixels
-        'gif_height': 200,  # in pixels
-        'timer_size': 20,  # size of the timer
+        'reminder_width': 5.5,  # reminder width in cm
+        'reminder_height': 5.8,  # reminder height in cm
+        'gif_width': 150,  # in pixels
+        'gif_height': 150,  # in pixels
+        'timer_size': 15,  # size of the timer
     }
 
     os.system('cls')  # Clear the screen
