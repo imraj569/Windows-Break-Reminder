@@ -13,7 +13,7 @@ class TimerApp:
         self.config = config
 
         self.root = tk.Tk()
-        self.root.title("Break Reminder")
+        self.root.title("Reminder")
 
         # Convert cm to pixels
         width_cm = config['reminder_width']
@@ -26,7 +26,7 @@ class TimerApp:
         self.root.attributes('-topmost', True)  # Keep window on top
 
         # Timer Label with smaller font size
-        self.time_label = tk.Label(self.root, font=('Helvetica', config['timer_size']), bg='white', fg='black')
+        self.time_label = tk.Label(self.root, font=('Helvetica', config['timer_size']))
         self.time_label.pack(pady=1)
 
         # Frame for buttons
@@ -45,6 +45,9 @@ class TimerApp:
 
         self.reset_button = tk.Button(self.button_frame, text="Reset", command=self.reset_timer, font=('Helvetica', 8))
         self.reset_button.pack(side=tk.LEFT, padx=1)
+
+        self.dark_mode_button = tk.Button(self.button_frame, text="Dark Mode", command=self.toggle_dark_mode, font=('Helvetica', 8))
+        self.dark_mode_button.pack(side=tk.LEFT, padx=1)
 
         # Timer settings
         self.work_time = config['work_time']
@@ -76,6 +79,10 @@ class TimerApp:
         y = (screenheight - height) // 2
         self.root.geometry(f"{width}x{height}+{x}+{y}")
 
+        # Initialize dark mode setting and apply theme
+        self.dark_mode = config.get('dark_mode', False)
+        self.apply_theme()
+
     def load_gif_frames(self, gif_path):
         frames = []
         try:
@@ -100,7 +107,7 @@ class TimerApp:
         self.run_timer()
         self.switch_to_work_gif()  # Start the work GIF when the timer starts
 
-    #notification system for remind and tips
+    # notification system for remind and tips
     def notify_break(self):
         messages = [
             "Take a short break! 🚶‍♀️🚶‍♂️ Fresh air and movement boost energy.",
@@ -114,8 +121,8 @@ class TimerApp:
         notification.notify(
             title="Time for a Break! Boss",
             message=message,
-            app_icon=r"D:\Github Projects\Windows-Break-Reminder\DataBase\icon.ico",  # Replace with your app icon if you have one
-            timeout= 2* 60  # Notification will disappear after 10 seconds
+            app_icon=self.config['notification_icon'],  # Use the icon from config
+            timeout=self.config['notification_timeout']  # Use the timeout from config
         )
 
     def run_timer(self):
@@ -209,30 +216,63 @@ class TimerApp:
         self.gif_index = 0
         self.animate_gif()  # Start the hello GIF animation
 
+    def toggle_dark_mode(self):
+        self.dark_mode = not self.dark_mode
+        self.apply_theme()
+
+    def apply_theme(self):
+        if self.dark_mode:
+            # Dark mode settings
+            self.root.config(bg='black')
+            self.time_label.config(bg='black', fg='white')
+            self.start_button.config(bg='gray20', fg='white')
+            self.take_break_button.config(bg='gray20', fg='white')
+            self.skip_break_button.config(bg='gray20', fg='white')
+            self.reset_button.config(bg='gray20', fg='white')
+            self.dark_mode_button.config(bg='gray20', fg='white')
+
+            # Update the button text to indicate light mode
+            self.dark_mode_button.config(text="Light Mode")
+        else:
+            # Light mode settings
+            self.root.config(bg='white')
+            self.time_label.config(bg='white', fg='black')
+            self.start_button.config(bg='SystemButtonFace', fg='black')
+            self.take_break_button.config(bg='SystemButtonFace', fg='black')
+            self.skip_break_button.config(bg='SystemButtonFace', fg='black')
+            self.reset_button.config(bg='SystemButtonFace', fg='black')
+            self.dark_mode_button.config(bg='SystemButtonFace', fg='black')
+
+            # Update the button text to indicate dark mode
+            self.dark_mode_button.config(text="Dark Mode")
+
+    def run(self):
+        self.root.mainloop()
+
 def lock_pc():
-    """
-    Locks the PC using Windows API.
-    """
-    ctypes.windll.user32.LockWorkStation()
+    try:
+        ctypes.windll.user32.LockWorkStation()
+    except Exception as e:
+        print(f"Error locking the workstation: {e}")
 
-def main():
-    config = {
-        'sound_path': r"D:\Github Projects\Windows-Break-Reminder\DataBase\sound.mp3",
-        'work_gif_path': r"D:\Github Projects\Windows-Break-Reminder\DataBase\work.gif",
-        'break_gif_path': r"D:\Github Projects\Windows-Break-Reminder\DataBase\break.gif",
-        'hello_gif_path': r"D:\Github Projects\Windows-Break-Reminder\DataBase\hello.gif",
-        'work_time': 25 *60,  # 25 minutes
-        'break_time': 10 * 60,  # 10 minutes
-        'reminder_width': 5.5,  # reminder width in cm
-        'reminder_height': 5.8,  # reminder height in cm
-        'gif_width': 150,  # in pixels
-        'gif_height': 150,  # in pixels
-        'timer_size': 15,  # size of the timer
-    }
-
-    os.system('cls')  # Clear the screen
-    app = TimerApp(config)
-    app.root.mainloop()
+# Configuration settings for the timer and notifications
+config = {
+    'work_time':  25*60,  # Work time in seconds (45 minutes)
+    'break_time': 10*60,  # Break time in seconds (10 minutes)
+    'timer_size': 12,  # Smaller font size for timer display
+    'reminder_width': 7,  # Window width in centimeters
+    'reminder_height': 5,  # Window height in centimeters
+    'work_gif_path': r'D:\Github Projects\Windows-Break-Reminder\DataBase\work.gif',  # Path to the GIF to display during work
+    'break_gif_path': r'D:\Github Projects\Windows-Break-Reminder\DataBase\break.gif',  # Path to the GIF to display during break
+    'hello_gif_path': r'D:\Github Projects\Windows-Break-Reminder\DataBase\hello.gif',  # Path to the GIF to display initially or during wait
+    'gif_width': 100,  # Width of the GIF in pixels
+    'gif_height': 100,  # Height of the GIF in pixels
+    'sound_path': r'D:\Github Projects\Windows-Break-Reminder\DataBase\sound.mp3',  # Path to the sound file to play when the timer reaches 0
+    'notification_icon': r'D:\Github Projects\Windows-Break-Reminder\DataBase\icon.ico',  # Path to the notification icon
+    'notification_timeout': 2*60,  # Timeout for notifications in seconds
+    'dark_mode': False,  # Default mode (False for light mode, True for dark mode)
+}
 
 if __name__ == "__main__":
-    main()
+    app = TimerApp(config)
+    app.run()

@@ -1,26 +1,28 @@
-
 ---
 
-# Break Reminder 🕒
+# Windows Break Reminder 🕒
 
-Welcome to the **Break Reminder** application! This tool helps you take regular breaks while working on your computer by using a countdown timer, providing options to take or skip breaks, and even locking your PC when a break is taken.
+Welcome to **Windows Break Reminder**, your ultimate tool for maintaining productivity and wellness during long computer sessions! This application helps you stay on track with regular breaks, provides visual and auditory reminders, and even locks your PC to ensure you take those necessary breaks.
 
-## Features 🚀
+## 🚀 Features
 
-- **Start Timer**: Begin the countdown for your work session.
-- **Take Break**: Lock your PC and reset the timer for your next work session.
-- **Skip Break**: Start a 30-second countdown before reminding you to take a break again.
-- **Reset Timer**: Reset the timer to the initial work duration.
-- **Animated GIFs**: Visual feedback with animated GIFs during work, break, and idle times.
+- **⏲️ Start Timer**: Begin the countdown for your work session with ease.
+- **🚪 Take Break**: Lock your PC and reset the timer for your next work session.
+- **⏩ Skip Break**: Start a 30-second countdown before reminding you to take a break again.
+- **🔄 Reset Timer**: Reset the timer to the initial work duration.
+- **🎥 Animated GIFs**: Enjoy visual feedback with animated GIFs during work, break, and idle times.
+- **🌙 Dark Mode**: Toggle between Dark Mode and Light Mode to suit your environment.
 
-## How to Use 🛠️
+## 🌟 Latest Release
 
-1. **Start Timer**: Click the "Start" button to begin the countdown. The work GIF will start animating.
-2. **Take Break**: When you’re ready for a break, click "Take Break." Your PC will lock, the timer will reset, and the hello GIF will display during the break.
-3. **Skip Break**: If you want to skip the break, click "Skip Break." The timer will be set to the break time, and the work GIF will animate.
-4. **Reset Timer**: Use the "Reset" button to reset the timer to the default work duration and display the hello GIF.
+[![Latest Release](https://img.shields.io/github/v/release/imraj569/Windows-Break-Reminder?label=Latest%20Release)](https://github.com/imraj569/Windows-Break-Reminder/releases/latest)
+### v0.0.2 (August 2024) 🚀
 
-## Installation 💻
+- **Enhanced Dark Mode**: Toggle between Dark Mode and Light Mode with updated visual elements and text. 🌙💡
+- **New Reminder Messages**: Added variety to notification messages for breaks with helpful tips. 💬
+- **Improved GIF Animation**: Smoother and more engaging GIF animations during different timer states. 🎞️
+
+## 📦 Installation
 
 1. **Clone the Repository**:
 
@@ -35,6 +37,7 @@ Welcome to the **Break Reminder** application! This tool helps you take regular 
    ```
 
 3. **Install Requirements**:
+
    ```bash
    pip install -r requirements.txt
    ```
@@ -43,16 +46,9 @@ Welcome to the **Break Reminder** application! This tool helps you take regular 
 
    Double-click `break_reminder.pyw` to run the application (it will run in the background without a console window).
 
-## Requirements 📋
+## ⚙️ Configuration
 
-- **Python 3.x**: Ensure you have Python installed on your system.
-- **Windows OS**: The script uses Windows-specific functionality to lock the PC.
-- **Pillow**: For handling GIF images.
-- **pygame**: For sound playback.
-
-## Configuring the Application ⚙️
-
-You can customize various settings by modifying the `config` dictionary in the `main()` function of the script:
+Customize the application by modifying the `config` dictionary in the `main()` function of the script:
 
 - **`work_time`**: Duration of the work session in seconds (default is 25 minutes).
 - **`break_time`**: Duration of the break period in seconds (default is 30 seconds).
@@ -66,12 +62,16 @@ You can customize various settings by modifying the `config` dictionary in the `
 - **`gif_height`**: Height of GIFs in pixels.
 - **`timer_size`**: Font size of the timer display.
 
-## Contributing 🤝
+## 🤝 Contributing
 
 Feel free to fork the repository and submit a pull request if you have suggestions or improvements!
 
-## License 📜
+## 📜 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## 👤 Author
+
+**Rajkishor Patra** - [GitHub Profile](https://github.com/imraj569/)
 
 ---
