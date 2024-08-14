@@ -1,3 +1,6 @@
+<img width="700" alt="Screenshot 2023-05-17 113811" src="https://github.com/user-attachments/assets/2f9e45c1-fe56-42dd-863e-0d359ed1c527">
+<img align="right" alt="Coding" width="278" src="https://github.com/user-attachments/assets/cea18143-82e3-4110-b18e-49456590cd25">
+
 ---
 
 # Windows Break Reminder 🕒
