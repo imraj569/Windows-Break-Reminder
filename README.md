@@ -44,14 +44,14 @@ Welcome to **Windows Break Reminder**, your ultimate tool for maintaining produc
 
 4. **Run the Script**:
 
-   Double-click `break_reminder.pyw` to run the application (it will run in the background without a console window).
+   Double-click `break_reminder.pyw` to run the application (it will run in the background without a console window) or past it on startup folder it will auto start when pc start.
 
 ## ⚙️ Configuration
 
 Customize the application by modifying the `config` dictionary in the `main()` function of the script:
 
 - **`work_time`**: Duration of the work session in seconds (default is 25 minutes).
-- **`break_time`**: Duration of the break period in seconds (default is 30 seconds).
+- **`break_time`**: Duration of the break period in seconds (default is 10 minutes).
 - **`sound_path`**: Path to the sound file used for notifications.
 - **`work_gif_path`**: Path to the GIF displayed during work sessions.
 - **`break_gif_path`**: Path to the GIF displayed during breaks.
